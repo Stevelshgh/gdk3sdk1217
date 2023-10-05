@@ -1,0 +1,10 @@
+all: 
+	@	@	echo "This make line itself will not be printed"
+	@	@
+	echo "But this will"
+
+.PHONY: clean
+
+clean:
+	@echo cleaning...
+	rm -f *.o temp

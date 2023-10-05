@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "ch32f10x.h": "c",
+        "io_config.h": "c",
+        "debug.h": "c",
+        "nan_usbd_desc.h": "c",
+        "ch32f10x_hal_def.h": "c",
+        "ch32f10x_conf.h": "c",
+        "ch32f10x_dbgmcu.h": "c",
+        "gdk3.h": "c"
+    }
+}

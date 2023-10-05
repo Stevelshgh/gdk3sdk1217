@@ -1,0 +1,12 @@
+bin/
+dcu/
+*.dcu
+*.~*
+*.obj
+
+*.elf
+*.hex
+*.lst
+*.map
+*.axf
+ 
