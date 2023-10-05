@@ -10,7 +10,6 @@
  *******************************************************************************/ 
 #ifndef __CH32F10x_USB_H
 #define __CH32F10x_USB_H
-#include "gdk3.h" // for packed added by Raymond 2022-12-11
 
 #ifdef __cplusplus
 extern "C" {
@@ -372,6 +371,7 @@ extern "C" {
 #define DEF_STRING_DESC_MANU    0x01
 #define DEF_STRING_DESC_PROD    0x02
 #define DEF_STRING_DESC_SERN    0x03
+#define DEF_STRING_DESC_PTP    0x18
 
 /* USB HID class request code */
 #ifndef HID_GET_REPORT
@@ -511,16 +511,20 @@ extern "C" {
 #endif
 
 #ifndef __PACKED
-#define	__PACKED			__packed	
+//#define	__PACKED			__packed	
+#define	__PACKED			__attribute__((packed))
 #endif
 
+#if 0
+
+#endif
 typedef struct _USB_SETUP_REQ {
     UINT8 bRequestType;
     UINT8 bRequest;
     UINT16 wValue;
     UINT16 wIndex;
     UINT16 wLength;
-}__PACKED USB_SETUP_REQ, *PUSB_SETUP_REQ;
+} __PACKED USB_SETUP_REQ, *PUSB_SETUP_REQ;
 
 
 typedef struct _USB_DEVICE_DESCR {
@@ -538,7 +542,7 @@ typedef struct _USB_DEVICE_DESCR {
     UINT8 iProduct;
     UINT8 iSerialNumber;
     UINT8 bNumConfigurations;
-}__PACKED USB_DEV_DESCR, *PUSB_DEV_DESCR;
+}__PACKED  USB_DEV_DESCR, *PUSB_DEV_DESCR;
 
 
 typedef struct _USB_CONFIG_DESCR {
@@ -550,7 +554,7 @@ typedef struct _USB_CONFIG_DESCR {
     UINT8 iConfiguration;
     UINT8 bmAttributes;
     UINT8 MaxPower;
-}__PACKED USB_CFG_DESCR, *PUSB_CFG_DESCR;
+}__PACKED  USB_CFG_DESCR, *PUSB_CFG_DESCR;
 
 
 typedef struct _USB_INTERF_DESCR {
@@ -563,7 +567,7 @@ typedef struct _USB_INTERF_DESCR {
     UINT8 bInterfaceSubClass;
     UINT8 bInterfaceProtocol;
     UINT8 iInterface;
-}__PACKED USB_ITF_DESCR, *PUSB_ITF_DESCR;
+}__PACKED  USB_ITF_DESCR, *PUSB_ITF_DESCR;
 
 
 typedef struct _USB_ENDPOINT_DESCR {
@@ -576,14 +580,14 @@ typedef struct _USB_ENDPOINT_DESCR {
 }__PACKED  USB_ENDP_DESCR, *PUSB_ENDP_DESCR;
 
 
-typedef struct _USB_CONFIG_DESCR_LONG {
+ typedef struct _USB_CONFIG_DESCR_LONG {
     USB_CFG_DESCR   cfg_descr;
     USB_ITF_DESCR   itf_descr;
     USB_ENDP_DESCR  endp_descr[1];
-}__packed USB_CFG_DESCR_LONG, *PUSB_CFG_DESCR_LONG;
+}__PACKED USB_CFG_DESCR_LONG, *PUSB_CFG_DESCR_LONG;
 
 
- typedef struct _USB_HUB_DESCR {
+typedef struct _USB_HUB_DESCR {
     UINT8 bDescLength;
     UINT8 bDescriptorType;
     UINT8 bNbrPorts;
@@ -593,7 +597,7 @@ typedef struct _USB_CONFIG_DESCR_LONG {
     UINT8 bHubContrCurrent;
     UINT8 DeviceRemovable;
     UINT8 PortPwrCtrlMask;
-}__PACKED USB_HUB_DESCR, *PUSB_HUB_DESCR;
+}__PACKED  USB_HUB_DESCR, *PUSB_HUB_DESCR;
 
 
  typedef struct _USB_HID_DESCR {
@@ -608,7 +612,7 @@ typedef struct _USB_CONFIG_DESCR_LONG {
 }__PACKED USB_HID_DESCR, *PUSB_HID_DESCR;
 
 
-typedef struct _UDISK_BOC_CBW {/* command of BulkOnly USB-FlashDisk */
+ typedef struct _UDISK_BOC_CBW {/* command of BulkOnly USB-FlashDisk */
     UINT32 mCBW_Sig;
     UINT32 mCBW_Tag;
     UINT32 mCBW_DataLen;                /* uppest byte of data length, always is 0 */
@@ -619,7 +623,7 @@ typedef struct _UDISK_BOC_CBW {/* command of BulkOnly USB-FlashDisk */
 }__PACKED UDISK_BOC_CBW, *PXUDISK_BOC_CBW;
 
 
-typedef struct _UDISK_BOC_CSW {/* status of BulkOnly USB-FlashDisk */
+ typedef struct _UDISK_BOC_CSW {/* status of BulkOnly USB-FlashDisk */
     UINT32 mCBW_Sig;
     UINT32 mCBW_Tag;
     UINT32 mCSW_Residue;                /* return: remainder bytes */         /* uppest byte of remainder length, always is 0 */

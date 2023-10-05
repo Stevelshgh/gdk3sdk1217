@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
  * File Name          : main.c
- * Author             : GEDU Shanghai Lab based on WCH
+ * Author             : WCH
  * Version            : V1.0.0
  * Date               : 2022/08/20
- * Description        : Develop GDK3 as a UDisk using its intrernal flash and the USBHD HW 
+ * Description        : Main program body.
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/

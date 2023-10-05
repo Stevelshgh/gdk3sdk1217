@@ -5680,7 +5680,7 @@ typedef struct
 #define  EXTEN_FLASH_CLK_TRIM2                 ((uint32_t)0x00040000)         /* Bit 2 */
 
 
-#include "ch32f10x_hal_def.h"
+
 #include "ch32f10x_conf.h"
 
 

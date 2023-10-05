@@ -81,13 +81,13 @@ const uint8_t  MyLangDescr[ ] =
 /* Manufacturer Descriptor */
 const uint8_t  MyManuInfo[ ] =
 {
-    24, 0x03, 'n',0,'a',0,'n',0,'o',0,'c',0,'o',0,'d',0,'e',0,'.',0,'c',0,'n',0
+    0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0
 };
 
 /* Product Information */
 const uint8_t  MyProdInfo[ ] =
 {
-        0x16, 0x03, 'G', 0, 'E', 0, 'D', 0, 'U', 0, ' ', 0, 'U', 0
+        0x16, 0x03, 'C', 0, 'H', 0, '1', 0, '0', 0, 'x', 0, 'U', 0
                   , 'D', 0, 'i', 0, 's', 0, 'k', 0,
 };
 

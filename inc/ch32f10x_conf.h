@@ -8,7 +8,6 @@
 #ifndef __CH32F10x_CONF_H 
 #define __CH32F10x_CONF_H
 
-#include "ch32f10x_hal_def.h" // for HAL_StatusTypeDef used bu gpio added by Raymond 2022-12-17
 #include "ch32f10x_adc.h"
 #include "ch32f10x_bkp.h"
 #include "ch32f10x_can.h"

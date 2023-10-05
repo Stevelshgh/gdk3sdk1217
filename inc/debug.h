@@ -9,6 +9,7 @@
 #ifndef __DEBUG_H
 #define __DEBUG_H 	
 
+#include <stdarg.h>
 #include "ch32f10x.h"
 #include "stdio.h"	
 
@@ -47,14 +48,35 @@
 #define DEBUG_UART3    3
 
 /* DEBUG UATR Definition */
-#define DEBUG   DEBUG_UART1
-//#define DEBUG   DEBUG_UART2
+//#define DEBUG   DEBUG_UART1
+#define DEBUG   DEBUG_UART2
 //#define DEBUG   DEBUG_UART3
+
+#define BUFSIZE  1024
+
+typedef struct {
+  uint8_t     intflag;                       // Debug Port
+  uint8_t     intst;                       // Fast Clock Flag
+  uint8_t     bRequestType;
+  uint8_t     bRequest;
+  uint16_t    wLength;    
+  uint16_t    wValue; 
+  uint16_t    wIndex; 
+} IRQHandler_Data_t;
+
+extern IRQHandler_Data_t IRQHandler_Data_Buffer[BUFSIZE-1];
+extern u32 IRQHandler_TxCnt , IRQHandler_RxCnt;
 
 void Delay_Init(void);
 void Delay_Us(u32 n);
 void Delay_Ms(u16 n);
 void USART_Printf_Init(u32 baudrate);
+
+void AsyncPrintf(const char* fmt, ...);
+void DoWorkComSend();
+
+extern void DecodeUSBHD_IRQHandlerData(IRQHandler_Data_t *IRQHandler_Data_X );
+extern void DoWorkUSBHD_IRQHandler();
 
 #endif /* __DEBUG_H */
 

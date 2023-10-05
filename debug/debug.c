@@ -87,7 +87,8 @@ void Delay_Ms(u16 n)
 * Input          : data: UART send Data.
 * Return         : data: UART send Data.
 *******************************************************************************/
-/*int fputc(int data, FILE *f)
+
+int My_fputc(int data, FILE *f)
 {
 #if (DEBUG == DEBUG_UART1)
   while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
@@ -102,16 +103,130 @@ void Delay_Ms(u16 n)
 	
   return data;
 }
-*/
+
 
 int _write(int file, char* ptr, int len)
 {
    for(int i = 0; i < len; ++i)
    {
-       fputc(ptr[i], 0);
+       My_fputc(ptr[i], 0);
    }
    return len;
 }
+
+#define BUFSIZE  1024
+char myprintf_buf[BUFSIZE];
+#define Buffer_len 4096
+u8 ComBuffer1[Buffer_len-1] = {0};     //format:len + id + Data + len+id+data+...                                            
+u32 ComTxCnt1 = 0, ComRxCnt1 = 0; 
+
+IRQHandler_Data_t IRQHandler_Data_Buffer[BUFSIZE-1];
+u32 IRQHandler_TxCnt = 0, IRQHandler_RxCnt = 0;
+
+void Debug_printf(const char* fmt, ...)
+{
+    va_list args;
+    int n;
+
+    va_start(args, fmt);
+    n = vsnprintf(myprintf_buf, BUFSIZE, fmt, args);
+    va_end(args);
+    int i = 0;
+    for(i = 0; i < n; i++)
+    {
+       //HAL_UART_Transmit(&huart2, (uint8_t *)&myprintf_buf[i], 1, 0xFFFF); //根据不同的平台，修改串口输出的函数
+       My_fputc(myprintf_buf[i],0);
+    }
+}
+
+u8 _IsComBuffFull()
+{
+  int iResult=0;
+  int iComTxCnt1=ComTxCnt1,iComRxCnt1=ComRxCnt1;
+  if(iComTxCnt1<iComRxCnt1)
+  {
+    if(iComRxCnt1 - iComTxCnt1>=Buffer_len-1)
+      iResult= 1;
+  }else if(iComTxCnt1>iComRxCnt1){
+    if(iComRxCnt1 + Buffer_len - iComTxCnt1>=Buffer_len-1)
+      iResult = 1;
+  } else
+  {
+    iResult = 0;
+  }
+  return iResult;
+}
+
+void AsyncPrintf(const char* fmt, ...)
+{
+  return;
+    va_list args;
+    int n;
+
+    va_start(args, fmt);
+    n = vsnprintf(myprintf_buf, BUFSIZE, fmt, args);
+    va_end(args);  
+
+    int i = 0;
+    for(i = 0; i < n; i++)
+    {
+       ComBuffer1[ComRxCnt1++] = myprintf_buf[i];
+       ComRxCnt1 = ComRxCnt1 % Buffer_len;
+
+      if(_IsComBuffFull())
+      {
+        break;
+      }
+
+    }
+
+}
+
+void DoWorkComSend()
+{
+  int i=0;
+  int iComTxCnt1=ComTxCnt1,iComRxCnt1=ComRxCnt1;
+  int iCnt=0;
+  if(iComTxCnt1<iComRxCnt1)
+  {
+    iCnt = iComRxCnt1 - iComTxCnt1;
+  }else if(iComTxCnt1>iComRxCnt1){
+    iCnt = iComRxCnt1 + Buffer_len - iComTxCnt1;
+  }
+
+  for(i=0 ; i < iCnt ; i++)
+  {
+    My_fputc(ComBuffer1[iComTxCnt1++],0);  
+    iComTxCnt1 = iComTxCnt1 % Buffer_len;
+  } 
+
+  ComTxCnt1 = iComTxCnt1;
+
+}
+
+void DoWorkUSBHD_IRQHandler()
+{
+  int i=0;
+  int iIRQHandler_TxCnt=IRQHandler_TxCnt,iIRQHandler_RxCnt=IRQHandler_RxCnt;
+  int iCnt=0;
+  if(iIRQHandler_TxCnt<iIRQHandler_RxCnt)
+  {
+    iCnt = iIRQHandler_RxCnt - iIRQHandler_TxCnt;
+  }else if(iIRQHandler_TxCnt>iIRQHandler_RxCnt){
+    iCnt = iIRQHandler_RxCnt + BUFSIZE - iIRQHandler_TxCnt;
+  }
+
+  for(i=0 ; i < iCnt ; i++)
+  {
+    DecodeUSBHD_IRQHandlerData(&IRQHandler_Data_Buffer[iIRQHandler_TxCnt]);
+    IRQHandler_TxCnt = iIRQHandler_RxCnt % BUFSIZE;
+  } 
+
+  IRQHandler_TxCnt = iIRQHandler_TxCnt;
+
+}
+
+
 
 /*******************************************************************************
 * Function Name  : USART_Printf_Init

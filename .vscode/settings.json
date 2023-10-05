@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.pas": "pascal",
         "ch32f10x.h": "c",
         "io_config.h": "c",
         "debug.h": "c",
@@ -7,6 +8,7 @@
         "ch32f10x_hal_def.h": "c",
         "ch32f10x_conf.h": "c",
         "ch32f10x_dbgmcu.h": "c",
-        "gdk3.h": "c"
+        "gdk3.h": "c",
+        "ch32f10x_usbfs_device.h": "c"
     }
 }

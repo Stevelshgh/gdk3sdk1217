@@ -1,0 +1,36 @@
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c: In function 'DecodeUSBHD_IRQHandlerData':
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:276:5: warning: implicit declaration of function 'Debug_printf' [-Wimplicit-function-declaration]
+  276 |     Debug_printf("intflag:%x instst:%x\r\n",intflag,intst);
+      |     ^~~~~~~~~~~~
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:552:50: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  552 |                                     pUSBHD_Descr = MyDevDescr;
+      |                                                  ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:558:50: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  558 |                                     pUSBHD_Descr = MyCfgDescr;
+      |                                                  ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:566:54: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  566 |                                         pUSBHD_Descr = MyHIDReportDesc;
+      |                                                      ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:584:54: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  584 |                                         pUSBHD_Descr = &MyCfgDescr[ 18 ];
+      |                                                      ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:605:58: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  605 |                                             pUSBHD_Descr = MyLangDescr;
+      |                                                          ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:611:58: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  611 |                                             pUSBHD_Descr = MyManuInfo;
+      |                                                          ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:617:58: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  617 |                                             pUSBHD_Descr = MyProdInfo;
+      |                                                          ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:623:58: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  623 |                                             pUSBHD_Descr = MySerNumInfo;
+      |                                                          ^
+../../src/gehid/USB_Device/ch32f10x_usbfs_device.c:962:9: warning: implicit declaration of function 'DebguPrintf' [-Wimplicit-function-declaration]
+  962 |         DebguPrintf(">other interrupts:%x\r\n",intflag);
+      |         ^~~~~~~~~~~
+usbd_compostie_km.c:15:10: fatal error: ../usb_device/ch32f10x_usbfs_device.h: No such file or directory
+   15 | #include "../usb_device/ch32f10x_usbfs_device.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Makefile:23: gehid.axf] Error 1

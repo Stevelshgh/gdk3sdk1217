@@ -14,9 +14,9 @@
 */
 /* #define SYSCLK_FREQ_HSE    HSE_VALUE */ 
 /* #define SYSCLK_FREQ_24MHz  24000000  */ 
-#define SYSCLK_FREQ_48MHz  48000000   
+/*#define SYSCLK_FREQ_48MHz  48000000   */
 /* #define SYSCLK_FREQ_56MHz  56000000  */  
-//#define SYSCLK_FREQ_72MHz  72000000
+#define SYSCLK_FREQ_72MHz  72000000
 
 
 /* Uncomment the following line if you need to relocate your vector Table in Internal SRAM */
