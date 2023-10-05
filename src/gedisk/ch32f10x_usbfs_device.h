@@ -38,8 +38,11 @@
 
 #define USBHD_UEP_MOD_BASE            0x4002340C
 #define USBHD_UEP_DMA_BASE            0x40023410
-#define USBHD_UEP_LEN_BASE            0x40023430
-#define USBHD_UEP_CTL_BASE            0x40023432
+//#define USBHD_UEP_LEN_BASE            0x40023430
+//#define USBHD_UEP_CTL_BASE            0x40023432
+#define USBHD_UEP_LEN_BASE            0x40023420
+#define USBHD_UEP_CTL_BASE            0x40023422
+
 #define USBHD_UEP_RX_EN               0x08
 #define USBHD_UEP_TX_EN               0x04
 #define USBHD_UEP_BUF_MOD             0x01

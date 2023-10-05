@@ -46,10 +46,24 @@ volatile uint8_t  USBHD_Endp_Busy[ DEF_UEP_NUM ];
  */
 void USBHD_RCC_Init( void )
 {
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA, ENABLE );
+    EXTEN->EXTEN_CTR |= EXTEN_USBHD_IO_EN;
+    if( SystemCoreClock == 72000000 )
+    {
+        RCC_USBCLKConfig( RCC_USBCLKSource_PLLCLK_1Div5 );
+    }
+    else if( SystemCoreClock == 48000000 )
+    {
+        RCC_USBCLKConfig( RCC_USBCLKSource_PLLCLK_Div1 );
+    }
+    RCC_AHBPeriphClockCmd( RCC_AHBPeriph_USBHD, ENABLE );
+
+    /*
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
     EXTEN->EXTEN_CTR |= EXTEN_USBHD_IO_EN;
     RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_USBHD,ENABLE);
+    */
 }
 
 /*********************************************************************
