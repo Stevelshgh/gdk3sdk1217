@@ -50,7 +50,7 @@ int main(void)
 
 	while(1)
 	{
-        UART1_DataRx_Deal( );
+        UART1_DataRx_Deal(0);
         UART1_DataTx_Deal( );
 	}
 }

@@ -408,14 +408,17 @@ void UART1_DataTx_Deal( void )
  *
  * @return  none
  */
-void UART1_DataRx_Deal( void )
+int32_t UART1_DataRx_Deal( int32_t atype)
 {
+    int32_t result=0;
     uint16_t temp16;
     uint32_t remain_len;
-    uint16_t packlen;
+    uint16_t packlen,nRx_DealPtr;
 
     /* Serial port 1 data DMA receive processing */
-    NVIC_DisableIRQ( USBHD_IRQn );
+    //NVIC_DisableIRQ( USBHD_IRQn );
+    if(Uart.USB_Up_IngFlag==0 || atype==1)
+    {
     UARTx_Rx_DMACurCount = DEF_UART1_RX_DMA_CH->CNTR;
     if( UARTx_Rx_DMALastCount != UARTx_Rx_DMACurCount )
     {
@@ -435,23 +438,35 @@ void UART1_DataRx_Deal( void )
             /* Save frame error status */
             DUG_PRINTF("U0_O:%08lx\n",(uint32_t)Uart.Rx_RemainLen);
             Uart.LastOverRx_DealLen = Uart.Rx_RemainLen + temp16; 
+            if(Uart.LastOverRx_DealLen>Uart.MaxOverRx_DealLen)
+                Uart.MaxOverRx_DealLen = Uart.LastOverRx_DealLen;       
             Uart.OverRx_DealCnt++;
+            //Uart.Rx_RemainLen += temp16;
         }
         else
         {
-            Uart.Rx_RemainLen += temp16;
+            //Uart.LastOverRx_DealLen = Uart.Rx_RemainLen + temp16; 
+            if(Uart.Rx_RemainLen + temp16>Uart.MaxOverRx_DealLen)
+                Uart.MaxOverRx_DealLen = Uart.Rx_RemainLen + temp16;  
+            //Uart.Rx_RemainLen += temp16;
         }
+        if(atype==0)
+        NVIC_DisableIRQ( USBHD_IRQn );
+        Uart.Rx_RemainLen += temp16;
+        if(atype==0)
+        NVIC_EnableIRQ( USBHD_IRQn );
 
         /* Setting reception status */
         Uart.Rx_TimeOut = 0x00;
     }
-    NVIC_EnableIRQ( USBHD_IRQn );
+    }
+    //NVIC_EnableIRQ( USBHD_IRQn );
 
     /*****************************************************************/
     /* Serial port 1 data processing via USB upload and reception */
     if( Uart.Rx_RemainLen )
     {
-        if( Uart.USB_Up_IngFlag == 0 )
+        if( Uart.USB_Up_IngFlag == 0 || atype==1 )
         {
             /* Calculate the length of this upload */
             remain_len = Uart.Rx_RemainLen;
@@ -474,11 +489,12 @@ void UART1_DataRx_Deal( void )
             /* Upload serial data via usb */
             if( packlen )
             {
+
+                if ((packlen>=DEF_USBD_FS_PACK_SIZE) && (Uart.Rx_DealPtr+packlen) & 0x3F!=0)
+                    packlen = packlen - (Uart.Rx_DealPtr+packlen) % 0x40;
+                if(atype==0)
                 NVIC_DisableIRQ( USBHD_IRQn );
-                Uart.USB_Up_IngFlag = 0x01;
-                Uart.USB_Up_TimeOut = 0x00;
-                USBHD_Endp_DataUp( DEF_UEP2, &UART1_Rx_Buf[ Uart.Rx_DealPtr ], packlen, DEF_UEP_CPY_LOAD );
-                NVIC_EnableIRQ( USBHD_IRQn );
+                nRx_DealPtr =Uart.Rx_DealPtr;
 
                 /* Calculate the variables of interest */
                 Uart.Rx_RemainLen -= packlen;
@@ -488,11 +504,28 @@ void UART1_DataRx_Deal( void )
                     Uart.Rx_DealPtr = 0x00;
                 }
 
+                Uart.USB_Up_IngFlag = 0x01;
+                Uart.USB_Up_TimeOut = 0x00;
+                USBHD_Endp_DataUp( DEF_UEP3, &UART1_Rx_Buf[ nRx_DealPtr ], packlen, DEF_UEP_DMA_LOAD/*DEF_UEP_CPY_LOAD*/ );
+
+                if(atype==0)
+                NVIC_EnableIRQ( USBHD_IRQn );
+
+                /* Calculate the variables of interest */
+                //Uart.Rx_RemainLen -= packlen;
+                /*Uart.Rx_DealPtr += packlen;
+                if( Uart.Rx_DealPtr >= DEF_UARTx_RX_BUF_LEN )
+                {
+                    Uart.Rx_DealPtr = 0x00;
+                }
+                /*
+
                 /* Start 0-length packet timeout timer */
                 if( packlen == DEF_USBD_FS_PACK_SIZE )
                 {
                     Uart.USB_Up_Pack0_Flag = 0x01;
                 }
+                result=1;
             }
         }
         else
@@ -508,6 +541,7 @@ void UART1_DataRx_Deal( void )
 
     /*****************************************************************/
     /* Determine if a 0-length packet needs to be uploaded (required for CDC mode) */
+    if(atype==0)
     if( Uart.USB_Up_Pack0_Flag )
     {
         if( Uart.USB_Up_IngFlag == 0 )
@@ -518,11 +552,13 @@ void UART1_DataRx_Deal( void )
                 NVIC_DisableIRQ( USBHD_IRQn );
                 Uart.USB_Up_IngFlag = 0x01;
                 Uart.USB_Up_TimeOut = 0x00;
-                USBHD_Endp_DataUp( DEF_UEP2, &UART1_Rx_Buf[ Uart.Rx_DealPtr ], 0, DEF_UEP_CPY_LOAD );
+                USBHD_Endp_DataUp( DEF_UEP3, &UART1_Rx_Buf[ Uart.Rx_DealPtr ], 0, DEF_UEP_CPY_LOAD );
                 Uart.USB_Up_IngFlag = 0;
                 NVIC_EnableIRQ( USBHD_IRQn );
                 Uart.USB_Up_Pack0_Flag = 0x00;
             }
         }
     }
+
+    return result;
 }

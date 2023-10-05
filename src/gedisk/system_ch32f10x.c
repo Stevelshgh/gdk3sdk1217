@@ -15,9 +15,9 @@
 * If none of the define below is enabled, the HSI is used as System clock source. 
 */
 //#define SYSCLK_FREQ_HSE    HSE_VALUE
-//#define SYSCLK_FREQ_48MHz_HSE  48000000
+#define SYSCLK_FREQ_48MHz_HSE  48000000
 //#define SYSCLK_FREQ_56MHz_HSE  56000000
-#define SYSCLK_FREQ_72MHz_HSE  72000000
+//#define SYSCLK_FREQ_72MHz_HSE  72000000
 //#define SYSCLK_FREQ_HSI    HSI_VALUE
 //#define SYSCLK_FREQ_48MHz_HSI  48000000
 //#define SYSCLK_FREQ_56MHz_HSI  56000000

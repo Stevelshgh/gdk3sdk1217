@@ -32,6 +32,7 @@ volatile uint8_t  USBHD_DevEnumStatus;
 __attribute__ ((aligned(4))) uint8_t USBHD_EP0_Buf[ DEF_USBD_UEP0_SIZE ];
 __attribute__ ((aligned(4))) uint8_t USBHD_EP1_Buf[ DEF_USBD_ENDP1_SIZE ];
 __attribute__ ((aligned(4))) uint8_t USBHD_EP2_Buf[ DEF_USBD_ENDP2_SIZE*2 ];
+__attribute__ ((aligned(4))) uint8_t USBHD_EP3_Buf[ DEF_USBD_ENDP3_SIZE];
 
 /* USB IN Endpoint Busy Flag */
 volatile uint8_t  USBHD_Endp_Busy[ DEF_UEP_NUM ];
@@ -63,17 +64,20 @@ void USBHD_Device_Endp_Init(void)
     uint8_t i;
 
     R8_UEP4_1_MOD = RB_UEP1_TX_EN;
-    R8_UEP2_3_MOD = RB_UEP2_TX_EN | RB_UEP2_RX_EN;
+    //R8_UEP2_3_MOD = RB_UEP2_TX_EN | RB_UEP2_RX_EN;
+    R8_UEP2_3_MOD = RB_UEP3_TX_EN | RB_UEP2_RX_EN;
 
     pEP0_RAM_Addr = USBHD_EP0_Buf;
     R16_UEP0_DMA = (uint16_t)(uint32_t)USBHD_EP0_Buf;
     R16_UEP1_DMA = (uint16_t)(uint32_t)USBHD_EP1_Buf;
     R16_UEP2_DMA = (uint16_t)(uint32_t)USBHD_EP2_Buf;
+    R16_UEP3_DMA = (uint16_t)(uint32_t)USBHD_EP3_Buf;
 
     R8_UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 
     R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
     R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+    R8_UEP3_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 
     /* Clear End-points Busy Status */
     for( i=0; i<DEF_UEP_NUM; i++ )
@@ -210,12 +214,13 @@ uint8_t USBHD_Endp_DataUp(uint8_t endp, uint8_t *pbuf, uint16_t len, uint8_t mod
         else if( R8_UEP2_3_MOD & RB_UEP3_TX_EN )
         {
             /* enpd3 tx enable, 64-bytes in */
-            if( mod == DEF_UEP_DMA_LOAD )
+            if( mod == DEF_UEP_DMA_LOAD  && ((uint32_t)pbuf & 0x3f==0))
             {
                 R16_UEP3_DMA = (uint16_t)(uint32_t)pbuf;
             }
             else 
             {
+                R16_UEP3_DMA = (uint16_t)(uint32_t)USBHD_EP3_Buf;
                 memcpy( ((uint8_t *)(R16_UEP3_DMA + 0x20000000)), pbuf, data_len );
             }
         }
@@ -327,6 +332,14 @@ void USBHD_IRQHandler( void )
                             R8_UEP2_CTRL ^= RB_UEP_T_TOG;
                             USBHD_Endp_Busy[ DEF_UEP2 ] = 0;
                             Uart.USB_Up_IngFlag = 0x00;
+                            break;
+                        /* end-point 3 data in interrupt */
+                        case UIS_TOKEN_IN | DEF_UEP3:
+                            R8_UEP3_CTRL = (R8_UEP3_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
+                            R8_UEP3_CTRL ^= RB_UEP_T_TOG;
+                            USBHD_Endp_Busy[ DEF_UEP3 ] = 0;
+                            if (UART1_DataRx_Deal(1)==0) 
+                                Uart.USB_Up_IngFlag = 0x00;
                             break;
 
                     default :

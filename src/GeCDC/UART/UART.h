@@ -48,7 +48,7 @@ typedef struct __attribute__((packed)) _UART_CTL
 {
     uint16_t Rx_LoadPtr;                                                         /* Serial x data receive buffer load pointer */
     uint16_t Rx_DealPtr;                                                         /* Pointer to serial x data receive buffer processing */
-    volatile uint16_t Rx_RemainLen;                                              /* Remaining unprocessed length of the serial x data receive buffer */
+    volatile uint32_t Rx_RemainLen;                                              /* Remaining unprocessed length of the serial x data receive buffer */
     uint8_t  Rx_TimeOut;                                                         /* Serial x data receive timeout */
     uint8_t  Rx_TimeOutMax;                                                      /* Serial x data receive timeout maximum */
 
@@ -72,8 +72,9 @@ typedef struct __attribute__((packed)) _UART_CTL
     uint8_t  USB_Int_UpFlag;                                                     /* Serial x interrupt upload status */
     uint16_t USB_Int_UpTimeCount;                                                /* Serial x interrupt upload timing */
     //error stat
-    uint16_t LastOverRx_DealLen; 
-    uint16_t OverRx_DealCnt; 
+    uint32_t LastOverRx_DealLen; 
+    uint32_t OverRx_DealCnt;
+    uint32_t MaxOverRx_DealLen; 
 }UART_CTL, *PUART_CTL;
 
 /***********************************************************************************************************************/
@@ -95,7 +96,7 @@ extern void UART1_ParaInit( uint8_t mode );										  /* Serial port parameter 
 extern void UART1_DMAInit( uint8_t type, uint8_t *pbuf, uint32_t len );           /* Serial port 1-related DMA initialization */
 extern void UART1_Init( uint8_t mode, uint32_t baudrate, uint8_t stopbits, uint8_t parity ); /* Serial port 1 initialization */
 extern void UART1_DataTx_Deal( void );                                            /* Serial port 1 data sending processing  */
-extern void UART1_DataRx_Deal( void );                                            /* Serial port 1 data reception processing */
+extern int32_t UART1_DataRx_Deal( int32_t atype );                                            /* Serial port 1 data reception processing */
 extern void UART1_USB_Init( void );                                               /* USB serial port initialization*/
 
 #ifdef __cplusplus

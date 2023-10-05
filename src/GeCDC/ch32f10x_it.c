@@ -38,6 +38,11 @@ void TIM2_IRQHandler( void )
     Uart.Rx_TimeOut++;
     Uart.USB_Up_TimeOut++;
 
+    /*if(Uart.Rx_RemainLen>DEF_UARTx_RX_BUF_LEN/2)
+    {
+        UART1_DataRx_Deal(1);
+    }*/
+
     /* clear status */
     TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
 }
