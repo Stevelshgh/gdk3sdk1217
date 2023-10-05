@@ -399,7 +399,7 @@ void USBHD_IRQHandler( void )
                     case UIS_TOKEN_OUT | DEF_UEP2:
                         R8_UEP2_CTRL ^= RB_UEP_R_TOG;
                         Uart.Tx_PackLen[ Uart.Tx_LoadNum ] = R8_USB_RX_LEN;
-                        memcpy(&UART1_Tx_Buf[ ( Uart.Tx_LoadNum * DEF_USB_FS_PACK_LEN ) ],USBHD_EP2_Buf,Uart.Tx_PackLen[ Uart.Tx_LoadNum ]);
+                        //memcpy(&UART1_Tx_Buf[ ( Uart.Tx_LoadNum * DEF_USB_FS_PACK_LEN ) ],USBHD_EP2_Buf,Uart.Tx_PackLen[ Uart.Tx_LoadNum ]);
                         Uart.Tx_LoadNum++;
                         //R16_UEP2_DMA = (uint16_t)(uint32_t)(uint8_t *)&UART1_Tx_Buf[ ( Uart.Tx_LoadNum * DEF_USB_FS_PACK_LEN ) ];
                         if( Uart.Tx_LoadNum >= DEF_UARTx_TX_BUF_NUM_MAX )
@@ -407,7 +407,7 @@ void USBHD_IRQHandler( void )
                             Uart.Tx_LoadNum = 0x00;
                             //R16_UEP2_DMA = (uint16_t)(uint32_t)(uint8_t *)&UART1_Tx_Buf[ 0 ];
                         }
-                        //R16_UEP2_DMA = (uint16_t)(uint32_t)(uint8_t *)&UART1_Tx_Buf[ ( Uart.Tx_LoadNum * DEF_USB_FS_PACK_LEN ) ];
+                        R16_UEP2_DMA = (uint16_t)(uint32_t)(uint8_t *)&UART1_Tx_Buf[ ( Uart.Tx_LoadNum * DEF_USB_FS_PACK_LEN ) ];
                         Uart.Tx_RemainNum++;
                         if( Uart.Tx_RemainNum >= ( DEF_UARTx_TX_BUF_NUM_MAX - 2 ) )
                         {
