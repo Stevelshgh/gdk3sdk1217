@@ -31,8 +31,10 @@ volatile uint32_t UARTx_Rx_DMALastCount;                      /* Serial port 1 r
 uint8_t RCC_Configuration( void )
 {
     RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA | RCC_APB2Periph_USART1, ENABLE );
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	
     RCC_AHBPeriphClockCmd( RCC_AHBPeriph_DMA1, ENABLE );
     RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM2, ENABLE );
+    RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM3, ENABLE );
     return 0;
 }
 
@@ -67,6 +69,39 @@ void TIM2_Init( void )
 
     /* TIM2 enable counter */
     TIM_Cmd( TIM2, ENABLE );
+}
+
+/*********************************************************************
+ * @fn      TIM3_Init
+ *
+ * @brief   100us Timer
+ *
+ * @return  none
+ */
+void TIM3_Init( void )
+{
+    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure = {0};
+
+    TIM_DeInit( TIM3 );
+
+    /* Time base configuration */
+    TIM_TimeBaseStructure.TIM_Period = 1;
+    TIM_TimeBaseStructure.TIM_Prescaler = 72;
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseInit( TIM3, &TIM_TimeBaseStructure );
+
+    /* Clear TIM3 update pending flag */
+    TIM_ClearFlag( TIM3, TIM_FLAG_Update );
+
+    /* TIM IT enable */
+    TIM_ITConfig( TIM3, TIM_IT_Update, ENABLE );
+
+    /* Enable Interrupt */
+    NVIC_EnableIRQ( TIM3_IRQn );
+
+    /* TIM2 enable counter */
+    TIM_Cmd( TIM3, ENABLE );
 }
 
 /*********************************************************************
@@ -106,10 +141,10 @@ void UART1_CfgInit( uint32_t baudrate, uint8_t stopbits, uint8_t parity )
     GPIO_Init( GPIOA, &GPIO_InitStructure );
 
     /* Test IO */
-    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;
+    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_12; //CONNECTED_LED_PIN
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-    GPIO_Init( GPIOA, &GPIO_InitStructure );
+    GPIO_Init( GPIOB, &GPIO_InitStructure );
 
   	/* USART1 configured as follow:
         - BaudRate = 115200 baud  
@@ -266,7 +301,7 @@ void UART1_DMAInit( uint8_t type, uint8_t *pbuf, uint32_t len )
         DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
         DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
         DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-        DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
+        DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
         DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
         DMA_Init( DMAy_Channelx, &DMA_InitStructure );
 

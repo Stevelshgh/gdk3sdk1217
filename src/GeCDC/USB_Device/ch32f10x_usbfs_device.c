@@ -339,7 +339,10 @@ void USBHD_IRQHandler( void )
                             R8_UEP3_CTRL ^= RB_UEP_T_TOG;
                             USBHD_Endp_Busy[ DEF_UEP3 ] = 0;
                             if (UART1_DataRx_Deal(1)==0) 
+                            {
                                 Uart.USB_Up_IngFlag = 0x00;
+                                NVIC_EnableIRQ( TIM3_IRQn );
+                            }
                             break;
 
                     default :

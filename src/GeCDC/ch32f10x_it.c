@@ -30,10 +30,20 @@ void NMI_Handler( void )
  */
 void TIM2_IRQHandler( void )
 {
-    /* Test IO */
+    /* Test IO comment:control led flick */
     static uint8_t tog;
-    tog ? (GPIOA->BSHR = GPIO_Pin_15):(GPIOA->BCR = GPIO_Pin_15);
-    tog ^= 1;
+    if(Uart.Rx_RemainLen)
+    {
+        if((Uart.Rx_TimeOut & 0x3ff)==0)
+        {
+            tog ? (GPIOB->BSHR = GPIO_Pin_12):(GPIOB->BCR = GPIO_Pin_12);
+            tog ^= 1;
+        }
+    }else if(tog==1)
+    {
+        GPIOB->BSHR = GPIO_Pin_12;
+        tog ^= 1;
+    }
     /* uart timeout counts */
     Uart.Rx_TimeOut++;
     Uart.USB_Up_TimeOut++;
@@ -45,6 +55,24 @@ void TIM2_IRQHandler( void )
 
     /* clear status */
     TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
+}
+
+/*********************************************************************
+ * @fn      TIM3_IRQHandler
+ *
+ * @brief   This function handles TIM2 exception.
+ *
+ * @return  none
+ */
+void TIM3_IRQHandler( void )
+{
+    /* Test IO comment:control led flick */
+    if(UART1_DataRx_Deal(0)==1)
+    {
+        NVIC_DisableIRQ( TIM3_IRQn );
+    }
+    /* clear status */
+    TIM_ClearITPendingBit( TIM3, TIM_IT_Update );
 }
 
 

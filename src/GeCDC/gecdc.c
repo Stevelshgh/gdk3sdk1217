@@ -46,11 +46,14 @@ int main(void)
     USBHD_RCC_Init( );
     USBHD_Device_Init( ENABLE );
 
+	/* Tim3 init */
+    TIM3_Init( );		
+
     //printf( "main\r\n" );
 
 	while(1)
 	{
-        UART1_DataRx_Deal(0);
+        //UART1_DataRx_Deal(0);
         UART1_DataTx_Deal( );
 	}
 }
