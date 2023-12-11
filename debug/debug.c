@@ -104,7 +104,7 @@ int My_fputc(int data, FILE *f)
   return data;
 }
 
-
+__attribute__ ((used))
 int _write(int file, char* ptr, int len)
 {
    for(int i = 0; i < len; ++i)
